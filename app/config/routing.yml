@@ -1,0 +1,10 @@
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix: "/doc"
+login_check:
+    path:     /login_check
+    methods:  [POST]
+employees:
+    resource: "@AppBundle/Controller"
+    type: annotation
+

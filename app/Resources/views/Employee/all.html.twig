@@ -1,0 +1,81 @@
+{% extends '::base.html.twig'  %}
+
+{% block body %}
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ path('all') }}">Admin Panel</a>
+            </div>
+            <a href="{{ path('create')}}" class="btn btn-default btn-sm" style="float:right;" >Создать</a>
+            <a href="{{ path('create')}}" class="btn btn-default btn-sm" style="float:right;" >История</a>
+        </div>
+    </nav>
+    {#{% if app.user != null %}#}
+        <div style="height: 45px;">
+
+
+        </div>
+
+
+    <table class="table table-hover table-responsive">
+        <thead>
+        <tr>
+            <th class="col-sm-1 {% if employees.isSorted('e.surname') %}sorted{% endif %}">{{ knp_pagination_sortable(employees, 'Фамилия', 'e.surname') }}</th>
+            <th class="col-sm-1 {% if employees.isSorted('e.name') %}sorted{% endif %}">{{ knp_pagination_sortable(employees, 'Имя', 'e.name') }}</th>
+            <th class="col-sm-1 {% if employees.isSorted('e.position') %}sorted{% endif %}">{{ knp_pagination_sortable(employees, 'Должность', 'e.position') }}</th>
+            <th class="col-sm-1 {% if employees.isSorted('e.salary') %}sorted{% endif %}">{{ knp_pagination_sortable(employees, 'Зарплата', 'e.salary') }}</th>
+            <th class="col-sm-2 {% if employees.isSorted('e.employmentDate') %}sorted{% endif %}">{{ knp_pagination_sortable(employees, 'Дата трудоустройства', 'e.employmentDate') }}</th>
+            <th class="col-sm-2 ">Фото</th>
+            <th class="col-sm-2">Количество отработанных дней</th>
+            <th class="col-sm-2">Количество возможных выходных</th>
+            <th class="col-sm-2">Количество за свой счет</th>
+        </tr>
+        </thead>
+        <tbody>
+
+
+        {% for employee in employees %}
+
+                <tr>
+                    <td>{{ employee.surname }}</td>
+                    <td>{{ employee.name }}</td>
+                    <td>{{ employee.position }}</td>
+                    <td>
+                        {% set salary = employee.salary-(employee.salary/30*employee.own) %}
+                        {{ salary|number_format(0, '.', ',') }}</td>
+                    <td>{{ employee.employmentDate|date('Y-m-d') }}</td>
+                    <td><img  src="{{ asset('images/' ~ employee.getImage()) }}" style=" width:200px;"></td>
+                    <td>
+                        {% set difference = date(employee.employmentDate).diff(date()) %}
+                        {% set leftDays = difference.days %}
+                        {% if leftDays == 1 %}
+                            1 day
+                        {% else %}
+                            {{ leftDays }} дня
+                        {% endif %}
+                        {% set vacation = (leftDays/18.25)-(20-employee.vacation) %}
+                    </td>
+                    <td> {{ vacation|number_format(0, '.', ',') }}</td>
+                    <td> {{ employee.own }}</td>
+                    <td>
+                        {#<a href="{{ path('edit', { 'id': employee.id }) }}" class="btn btn-default btn-sm">Редактировать</a>#}
+                        <a href="{{ path('minus', { 'id': employee.id }) }}" class="btn btn-default btn-sm">-1 выходной</a>
+                        <a href="{{ path('plus', { 'id': employee.id }) }}" class="btn btn-default btn-sm">+1 за свой счёт</a>
+                    </td>
+
+                </tr>
+
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+    {#{% endif %}#}
+    {#{% if app.user == null %}#}
+        {#<div style="text-align:center;"><a href="login" class="btn btn-info" style="text-align:center;"> Login</a>#}
+
+        {#</div>#}
+    {#{% endif %}#}
+{% endblock %}
